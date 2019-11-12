@@ -11,9 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-.root {
-  flexGrow: 1,
-}
+
 .wrapper {
   height: 30%;
 }
