@@ -1,8 +1,16 @@
+import axios from 'axios'
+const serverUrl = process.env.REACT_APP_SERVER_URL + ":" + process.env.REACT_APP_SERVER_PORT 
+const config = {
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+  }
+};
 
-const serverUrl = process.env.REACT_APP_SERVER_URL
-function connect() {
-  // GET to server
-
+const connect = async () => {
+  const request = await axios.get(serverUrl + "/game", config).then(response => response.data)
+  console.log(request)
+  return request
 }
 
 function heartbeat() {
@@ -12,8 +20,5 @@ function heartbeat() {
 function sendAction() {
   // POST action to server
 }
-module.exports = {
-  connect,
-  heartbeat,
-  sendAction
-}
+
+export default {connect, heartbeat, sendAction}

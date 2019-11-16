@@ -5,7 +5,7 @@ import Box from '@material-ui/core/Box';
 import Game from './game/game'
 import JoinGame from './game/joinGame'
 import { makeStyles } from '@material-ui/core/styles';
-
+import networking from './networking/networking'
 
 
 class App extends React.Component {
@@ -24,11 +24,14 @@ class App extends React.Component {
   
   }
   connectHandler = () => {
-    this.setState({connected: true})
-}
+    networking.connect().then(res => this.setState({connected: res.status, id: res.id}))
+  }
+
+  heartbeatHandler = () => {
+    const id = networking.heartbeat()
+  }
 
   render() {
-
     return (
       <div className={this.state.styles.root}>
         <Container maxWidth="sm">
@@ -43,6 +46,7 @@ class App extends React.Component {
           <JoinGame
             connectHandler={this.connectHandler}
           />
+            
           }
         </Container>
       </div>
