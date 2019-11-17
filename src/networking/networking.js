@@ -1,5 +1,5 @@
 import axios from 'axios'
-const serverUrl = process.env.REACT_APP_SERVER_URL + ":" + process.env.REACT_APP_SERVER_PORT 
+const serverUrl = process.env.REACT_APP_SERVER_URL
 const config = {
   headers: {
     "Access-Control-Allow-Origin": "*",
@@ -13,12 +13,21 @@ const connect = async () => {
   return request
 }
 
-function heartbeat() {
-  // POST to server
+const heartbeat = async (id) => {
+  const body = {
+    id: id
+  }
+  const request = await axios.post(serverUrl + "/heartbeat", body, config)
+  return request.data
 }
 
-function sendAction() {
-  // POST action to server
+const sendAction = async (id, move) => {
+  const body = {
+    id: id,
+    index: move
+  }
+  const request = await axios.post(serverUrl + "/turn", body, config)
+  return request.data
 }
 
 export default {connect, heartbeat, sendAction}

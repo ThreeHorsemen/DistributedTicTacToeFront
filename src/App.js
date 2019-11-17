@@ -13,8 +13,11 @@ class App extends React.Component {
     super(props);
     this.state = {
       id: null,
-      game: {},
+      game: [0,0,0,0,0,0,0,0,0],
+      game_ongoing: false,
+      status: true,
       connected: false,
+      turn: false,
       styles: makeStyles(theme => ({
         root: {
           flexGrow: 1,
@@ -23,12 +26,51 @@ class App extends React.Component {
     };
   
   }
-  connectHandler = () => {
-    networking.connect().then(res => this.setState({connected: res.status, id: res.id}))
+  connectHandler = async () => {
+    await networking.connect()
+    .then(res => 
+      this.setState({
+        connected: res.status,
+        status: res.status,
+        id: res.id
+      })
+    )
+    this.firstHeartbeatHandler()
+  }
+
+  firstHeartbeatHandler = () => {
+    if (this.state.id) {
+      this.heartbeatHandler()
+    }
+    else if (this.state.status === false) {
+      this.setState({connected: false})
+    }
+    else {
+      //console.log(this.state.id)
+      setTimeout(this.firstHeartbeatHandler, 1000)
+    }
   }
 
   heartbeatHandler = () => {
-    const id = networking.heartbeat()
+    networking.heartbeat(this.state.id).then(res => this.heartbeatResolver(res))
+    setTimeout(this.heartbeatHandler, 1000)
+  }
+
+  heartbeatResolver = (res) => {
+    //console.log(res)
+    this.setState({
+      game: res.game,
+      game_ongoing: res.game_ongoing,
+      turn: res.value
+    })
+  }
+
+  turnHandler = (event) => {
+    console.log(event.target.id)
+    if (this.state.turn) {
+      networking.sendAction(this.state.id, parseInt(event.target.id))
+      this.setState({turn: false})
+    }
   }
 
   render() {
@@ -41,7 +83,11 @@ class App extends React.Component {
             </Typography>
           </Box>
           {this.state.connected ?
-          <Game/>
+          <Game 
+            turn={this.state.turn}
+            game={this.state.game}
+            turnHandler={this.turnHandler}
+          />
           :
           <JoinGame
             connectHandler={this.connectHandler}

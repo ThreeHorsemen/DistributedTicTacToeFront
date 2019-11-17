@@ -20,6 +20,9 @@ code {
   background-color: black;
 
 }
+.value {
+  font-size: 20
+}
 .main {
   width: 80vw;
   height: 80vh;
