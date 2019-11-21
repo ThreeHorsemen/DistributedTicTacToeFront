@@ -21,12 +21,12 @@ export default function Game(props) {
       return (
         <div></div>
       )
-    } else if (props.game[val] === 1) {
+    } else if (props.game[val] % 2 === 1) {
       return (
         <p className="value">X</p>
       )
     }
-    else if (props.game[val] === 2) {
+    else if (props.game[val] % 2 === 0) {
       return (
         <p className="value">0</p>
       )

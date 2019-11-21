@@ -18,6 +18,7 @@ class App extends React.Component {
       status: true,
       connected: false,
       turn: false,
+      winner: undefined,
       styles: makeStyles(theme => ({
         root: {
           flexGrow: 1,
@@ -50,30 +51,68 @@ class App extends React.Component {
       setTimeout(this.firstHeartbeatHandler, 1000)
     }
   }
+  reset = () => {
+    this.setState({
+      id: null,
+      game: [0,0,0,0,0,0,0,0,0],
+      game_ongoing: false,
+      status: true,
+      connected: false,
+      turn: false,
+      winner: undefined
+    })
 
+  }
   heartbeatHandler = () => {
-    networking.heartbeat(this.state.id).then(res => this.heartbeatResolver(res))
-    setTimeout(this.heartbeatHandler, 1000)
+    if (!this.state.connected) {
+      this.reset()
+      return
+    }
+    if (this.state.winner) {
+      if (this.state.winner === -1) {
+        window.alert("draw")
+      }
+      else if (this.state.winner === this.state.id) {
+        window.confirm("uwon")
+      } else {
+        window.alert("ulose")
+      }
+      this.reset()
+    } else {
+      networking.heartbeat(this.state.id).then(res => this.heartbeatResolver(res)).catch(e => {
+        console.log(e)
+        this.reset()
+      })
+      setTimeout(this.heartbeatHandler, 1000)
+    }
   }
 
   heartbeatResolver = (res) => {
-    //console.log(res)
+    console.log(res)
     this.setState({
       game: res.game,
       game_ongoing: res.game_ongoing,
       turn: res.value
     })
+    if (!res.game_ongoing) {
+      this.setState({winner: res.winner})
+    }
   }
 
   turnHandler = (event) => {
     console.log(event.target.id)
     if (this.state.turn) {
-      networking.sendAction(this.state.id, parseInt(event.target.id))
-      this.setState({turn: false})
+      networking.sendAction(this.state.id, parseInt(event.target.id)).then(res => 
+        this.setState({
+          turn: false,
+          game: res.game
+        })
+      )
     }
   }
 
   render() {
+    console.log(this.state.winner)
     return (
       <div className={this.state.styles.root}>
         <Container maxWidth="sm">
