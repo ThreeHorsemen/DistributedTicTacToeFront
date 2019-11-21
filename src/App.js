@@ -25,8 +25,8 @@ class App extends React.Component {
         }
       }))
     };
-  
   }
+  // Used to connect to the python server
   connectHandler = async () => {
     await networking.connect()
     .then(res => 
@@ -39,6 +39,7 @@ class App extends React.Component {
     this.firstHeartbeatHandler()
   }
 
+  // Used to send out the initial hearbeat
   firstHeartbeatHandler = () => {
     if (this.state.id) {
       this.heartbeatHandler()
@@ -51,6 +52,8 @@ class App extends React.Component {
       setTimeout(this.firstHeartbeatHandler, 1000)
     }
   }
+
+  // Used to reset the app state
   reset = () => {
     this.setState({
       id: null,
@@ -61,8 +64,9 @@ class App extends React.Component {
       turn: false,
       winner: undefined
     })
-
   }
+
+  // Used to send out regular hearbeats in an interval until the game ends
   heartbeatHandler = () => {
     if (!this.state.connected) {
       this.reset()
@@ -79,14 +83,20 @@ class App extends React.Component {
       }
       this.reset()
     } else {
-      networking.heartbeat(this.state.id).then(res => this.heartbeatResolver(res)).catch(e => {
+      // Send a heartbeat to the python server
+      networking.heartbeat(this.state.id).then(res => 
+        this.heartbeatResolver(res)
+      ).catch(e => {
         console.log(e)
         this.reset()
       })
+
+      // Start another heartbeat if no errors occure during networking and the game hasn't ended
       setTimeout(this.heartbeatHandler, 1000)
     }
   }
 
+  // Used to set the app's state based on a heartbeat response
   heartbeatResolver = (res) => {
     console.log(res)
     this.setState({
@@ -94,16 +104,18 @@ class App extends React.Component {
       game_ongoing: res.game_ongoing,
       turn: res.value
     })
+    // Set winner if game has ended
     if (!res.game_ongoing) {
       this.setState({winner: res.winner})
     }
   }
 
+  // Used to handle a move by a player
   turnHandler = (event) => {
-    console.log(event.target.id)
     if (this.state.turn) {
       networking.sendAction(this.state.id, parseInt(event.target.id)).then(res => 
         this.setState({
+          // Set the turn state to false after an action
           turn: false,
           game: res.game
         })
@@ -112,7 +124,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.winner)
     return (
       <div className={this.state.styles.root}>
         <Container maxWidth="sm">

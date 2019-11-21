@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-
+// Render the game board
 export default function Game(props) {
 
   const useStyles = makeStyles(theme => ({
@@ -41,7 +41,6 @@ export default function Game(props) {
       </Grid>
     )
   }
-  console.log(props)
   return(
     <div>
       {props.turn ?

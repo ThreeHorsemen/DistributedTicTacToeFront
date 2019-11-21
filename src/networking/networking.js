@@ -7,12 +7,14 @@ const config = {
   }
 };
 
+// Used for initial connection to python server
 const connect = async () => {
   const request = await axios.get(serverUrl + "/game", config).then(response => response.data)
   console.log(request)
   return request
 }
 
+// Used to send regular heartbeats to the server
 const heartbeat = async (id) => {
   const body = {
     id: id
@@ -21,6 +23,7 @@ const heartbeat = async (id) => {
   return request.data
 }
 
+// Used to send a players move to the server
 const sendAction = async (id, move) => {
   const body = {
     id: id,

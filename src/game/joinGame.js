@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     height: "8vw"
   },
 }));
-
+// The initial join game button rendering
 export default function JoinGame(props) {
   const classes = useStyles();
   return(
